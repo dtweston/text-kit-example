@@ -8,6 +8,8 @@
 
 import UIKit
 
+let CustomUnderlineStyle = 0x11
+
 class UnderlineLayoutManager: NSLayoutManager {
     
     func drawFancyUnderlineForRect(rect: CGRect) {
@@ -32,17 +34,31 @@ class UnderlineLayoutManager: NSLayoutManager {
             i++;
         }
         
-        UIColor.greenColor().setStroke()
         path.stroke()
     }
     
     override func drawUnderlineForGlyphRange(glyphRange: NSRange, underlineType underlineVal: NSUnderlineStyle, baselineOffset: CGFloat, lineFragmentRect lineRect: CGRect, lineFragmentGlyphRange lineGlyphRange: NSRange, containerOrigin: CGPoint) {
         
-        if let container = textContainerForGlyphAtIndex(glyphRange.location, effectiveRange: nil) {
-            let boundingRect = boundingRectForGlyphRange(glyphRange, inTextContainer: container)
-            let offsetRect = CGRectOffset(boundingRect, containerOrigin.x, containerOrigin.y)
+        if underlineVal.rawValue & CustomUnderlineStyle == CustomUnderlineStyle {
             
-            drawFancyUnderlineForRect(offsetRect)
+            let charRange = characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
+            if let underlineColor = textStorage?.attribute(NSUnderlineColorAttributeName, atIndex: charRange.location, effectiveRange: nil) as? UIColor {
+                underlineColor.setStroke()
+            }
+            
+            if let container = textContainerForGlyphAtIndex(glyphRange.location, effectiveRange: nil) {
+                let boundingRect = boundingRectForGlyphRange(glyphRange, inTextContainer: container)
+                let offsetRect = CGRectOffset(boundingRect, containerOrigin.x, containerOrigin.y)
+                
+                drawFancyUnderlineForRect(offsetRect)
+            }
+        }
+        else {
+            super.drawUnderlineForGlyphRange(glyphRange, underlineType: underlineVal, baselineOffset: baselineOffset, lineFragmentRect: lineRect, lineFragmentGlyphRange: lineGlyphRange, containerOrigin: containerOrigin)
         }
     }
+//    
+//    override func underlineGlyphRange(glyphRange: NSRange, underlineType underlineVal: NSUnderlineStyle, lineFragmentRect lineRect: CGRect, lineFragmentGlyphRange lineGlyphRange: NSRange, containerOrigin: CGPoint) {
+//        // calculate line rects to be underlined and call drawUnderline
+//    }
 }
