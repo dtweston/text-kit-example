@@ -25,7 +25,7 @@ class ViewController: UIViewController {
         attributedStr.addAttributes(attributes, range: titleRange)
         
         let storage = NSTextStorage(attributedString: attributedStr)
-        let layout = NSLayoutManager()
+        let layout = UnderlineLayoutManager()
         storage.addLayoutManager(layout)
         let container = NSTextContainer()
         container.widthTracksTextView = true
@@ -35,7 +35,6 @@ class ViewController: UIViewController {
         textView.backgroundColor = UIColor(white: 0.2, alpha: 1.0)
         view.backgroundColor = UIColor(white: 0.2, alpha: 1.0)
         view.addSubview(textView)
-
     }
 
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
