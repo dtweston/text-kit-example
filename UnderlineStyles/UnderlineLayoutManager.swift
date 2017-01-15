@@ -12,18 +12,18 @@ let CustomUnderlineStyle = 0x11
 
 class UnderlineLayoutManager: NSLayoutManager {
     
-    func drawFancyUnderlineForRect(rect: CGRect) {
-        let left = CGRectGetMinX(rect)
-        let bottom = CGRectGetMaxY(rect)
-        let width = CGRectGetWidth(rect)
+    func drawFancyUnderlineForRect(_ rect: CGRect) {
+        let left = rect.minX
+        let bottom = rect.maxY
+        let width = rect.width
         
         let path = UIBezierPath()
-        path.moveToPoint(CGPointMake(left, bottom))
+        path.move(to: CGPoint(x: left, y: bottom))
         var x = left
         var y = bottom
         var i = 0
         while (x <= left + width) {
-            path.addLineToPoint(CGPointMake(x, y))
+            path.addLine(to: CGPoint(x: x, y: y))
             x += 2
             if i % 2 == 0 {
                 y = bottom + 2.0
@@ -31,34 +31,30 @@ class UnderlineLayoutManager: NSLayoutManager {
             else {
                 y = bottom
             }
-            i++;
+            i += 1;
         }
         
         path.stroke()
     }
     
-    override func drawUnderlineForGlyphRange(glyphRange: NSRange, underlineType underlineVal: NSUnderlineStyle, baselineOffset: CGFloat, lineFragmentRect lineRect: CGRect, lineFragmentGlyphRange lineGlyphRange: NSRange, containerOrigin: CGPoint) {
+    override func drawUnderline(forGlyphRange glyphRange: NSRange, underlineType underlineVal: NSUnderlineStyle, baselineOffset: CGFloat, lineFragmentRect lineRect: CGRect, lineFragmentGlyphRange lineGlyphRange: NSRange, containerOrigin: CGPoint) {
         
         if underlineVal.rawValue & CustomUnderlineStyle == CustomUnderlineStyle {
             
-            let charRange = characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
-            if let underlineColor = textStorage?.attribute(NSUnderlineColorAttributeName, atIndex: charRange.location, effectiveRange: nil) as? UIColor {
+            let charRange = characterRange(forGlyphRange: glyphRange, actualGlyphRange: nil)
+            if let underlineColor = textStorage?.attribute(NSUnderlineColorAttributeName, at: charRange.location, effectiveRange: nil) as? UIColor {
                 underlineColor.setStroke()
             }
             
-            if let container = textContainerForGlyphAtIndex(glyphRange.location, effectiveRange: nil) {
-                let boundingRect = boundingRectForGlyphRange(glyphRange, inTextContainer: container)
-                let offsetRect = CGRectOffset(boundingRect, containerOrigin.x, containerOrigin.y)
+            if let container = textContainer(forGlyphAt: glyphRange.location, effectiveRange: nil) {
+                let boundingRect = self.boundingRect(forGlyphRange: glyphRange, in: container)
+                let offsetRect = boundingRect.offsetBy(dx: containerOrigin.x, dy: containerOrigin.y)
                 
                 drawFancyUnderlineForRect(offsetRect)
             }
         }
         else {
-            super.drawUnderlineForGlyphRange(glyphRange, underlineType: underlineVal, baselineOffset: baselineOffset, lineFragmentRect: lineRect, lineFragmentGlyphRange: lineGlyphRange, containerOrigin: containerOrigin)
+            super.drawUnderline(forGlyphRange: glyphRange, underlineType: underlineVal, baselineOffset: baselineOffset, lineFragmentRect: lineRect, lineFragmentGlyphRange: lineGlyphRange, containerOrigin: containerOrigin)
         }
     }
-//    
-//    override func underlineGlyphRange(glyphRange: NSRange, underlineType underlineVal: NSUnderlineStyle, lineFragmentRect lineRect: CGRect, lineFragmentGlyphRange lineGlyphRange: NSRange, containerOrigin: CGPoint) {
-//        // calculate line rects to be underlined and call drawUnderline
-//    }
 }

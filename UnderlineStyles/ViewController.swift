@@ -17,13 +17,13 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         let str = "My favorite book is See Spot Run"
-        let attributedStr = NSMutableAttributedString(string: str, attributes: [NSForegroundColorAttributeName: UIColor(white: 0.9, alpha: 1.0), NSFontAttributeName: UIFont.systemFontOfSize(30)])
+        let attributedStr = NSMutableAttributedString(string: str, attributes: [NSForegroundColorAttributeName: UIColor(white: 0.9, alpha: 1.0), NSFontAttributeName: UIFont.systemFont(ofSize: 30)])
         
-        let titleRange = NSString(string: str).rangeOfString("See Spot Run")
-        let underlineStyle = CustomUnderlineStyle + NSUnderlineStyle.PatternSolid.rawValue
-        let attributes = [NSUnderlineStyleAttributeName: underlineStyle, NSUnderlineColorAttributeName: UIColor.yellowColor()]
+        let titleRange = NSString(string: str).range(of: "See Spot Run")
+        let underlineStyle = CustomUnderlineStyle + NSUnderlineStyle.patternSolid.rawValue
+        let attributes = [NSUnderlineStyleAttributeName: underlineStyle, NSUnderlineColorAttributeName: UIColor.yellow] as [String : Any]
         attributedStr.addAttributes(attributes, range: titleRange)
-        
+
         let storage = NSTextStorage(attributedString: attributedStr)
         let layout = UnderlineLayoutManager()
         storage.addLayoutManager(layout)
@@ -31,21 +31,15 @@ class ViewController: UIViewController {
         container.widthTracksTextView = true
         layout.addTextContainer(container)
         
-        textView = UITextView(frame: CGRectInset(view.bounds, 20, 10), textContainer: container)
+        textView = UITextView(frame: view.bounds.insetBy(dx: 20, dy: 10), textContainer: container)
         textView.backgroundColor = UIColor(white: 0.2, alpha: 1.0)
+        textView.isUserInteractionEnabled = false
         view.backgroundColor = UIColor(white: 0.2, alpha: 1.0)
         view.addSubview(textView)
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
